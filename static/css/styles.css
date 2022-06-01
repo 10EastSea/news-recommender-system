@@ -28,7 +28,10 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 .nav-link:focus, .nav-link:hover { color: #355C7D; }
 .page-link:focus, .page-link:hover { color: #355C7D; }
-.card-footer { background-color: rgba(0, 0, 0, 0.5); }
+.card-footer {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top: 0px solid black;
+}
 
 
 /* pc 화면 */
@@ -53,8 +56,8 @@ footer { margin: 50px; }
     height: 400px;
     color: white;
     
-    background-image: url("/static/images/business/Business_2.jpg");
-    background-size : cover;
+    background-image: url("/static/img/The_Brands_Queen_Elizabeth.jpg");
+    /* background-size : cover; */
 	background-position: center;
 }
 #main_impression_category { margin-right: 20px; }
