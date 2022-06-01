@@ -32,7 +32,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 
 /* pc 화면 */
-h1 {
+#title h1 {
     margin: 50px;
     margin-bottom: 30px;
     font-size: 50px;

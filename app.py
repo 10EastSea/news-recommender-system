@@ -3,12 +3,8 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 
 @app.route("/")
-def index():
+def news_home():
     return render_template("index.html")
-
-@app.route("/main")
-def main():
-    return render_template("main.html")
 
 @app.errorhandler(404)
 def page_not_found(e):
