@@ -8,7 +8,7 @@
     <!-- bootstrap css -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <!-- styles css -->
-    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
 
     <title>News RecSys</title>
 </head>
@@ -24,7 +24,7 @@
         <div class="container">
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link" href="/">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/news">News</a>
@@ -54,35 +54,27 @@
         </div>
     </div>
 
-    <!-- Main impression -->
-    <div id="main_impression">
+    <!-- Content -->
+    <div id="content">
         <div class="container">
             <div class="row">
-                <div id="main_impression_img_layout" class="col-8">
-                    <div id="main_impression_img" class="card">
-                        <div class="card-body"></div>
-                        <div class="card-footer">
-                            <span id="main_impression_category" class="badge text-bg-light">Life</span>
-                            <span id="main_impression_title">The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By</span>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 id="news_title" class="card-title">The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By</h3>
+                        <hr>
+                        
+                        <img id="news_img" src="/static/img/The_Brands_Queen_Elizabeth.jpg" style="width: 100%;">
+                        <br><br>
+                        
+                        <div id="news_content" class="card-text">
+                            <!-- article -->
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt nisi a facere, adipisci maiores quibusdam qui voluptas tempore cum eum commodi nulla et dignissimos porro, aliquid, voluptatum atque deleniti molestias. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem maxime laboriosam illum similique! Veritatis illum, vel quos placeat cum dicta fuga corporis ut aliquid consectetur non repellendus. Perferendis, illo voluptatum. Lorem ipsum dolor sit, amet consectetur adipisicing elit. In esse deleniti explicabo necessitatibus iste dolores harum quas nihil est, ratione, corrupti ullam corporis consequatur culpa possimus? Temporibus explicabo quis libero! Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis dolore, dicta corrupti quod sequi unde, deserunt illo deleniti eveniet exercitationem aut aliquam voluptatem reprehenderit maiores quidem est iste pariatur vel! Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum minus nemo totam consectetur sapiente quas corporis consequatur, inventore quia. Voluptatem totam nulla atque facilis, molestiae animi praesentium nostrum amet ratione. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugit fuga placeat ex tempore hic unde, consequuntur nostrum impedit dicta, ipsum nesciunt distinctio beatae aliquam sit! Animi quod repudiandae nam laudantium. Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis tempora placeat neque iste recusandae iure earum error debitis accusantium provident qui ut repellendus quam, eum dolorum, ullam, laboriosam vero eaque? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse, facilis aliquid. Fugiat tempore sit, assumenda quia ab, provident alias dolorum placeat blanditiis hic fuga nisi necessitatibus inventore libero explicabo pariatur?
                         </div>
-                    </div>
-                    <div id="main_impression_id" style="display: none;">N0001</div>
-                </div>
-                <div id="main_impression_list_layout" class="col-4">
-                    <div id="main_impression_list" class="card">
-                        <div class="card-header">Recommended News</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-action">The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By</li>
-                            <li class="list-group-item list-group-item-action">Walmart Slashes Prices on Last-Generation iPads</li>
-                            <li class="list-group-item list-group-item-action">50 Worst Habits For Belly Fat</li>
-                            <li class="list-group-item list-group-item-action">Dispose of unwanted prescription drugs during the DEA's Take Back Day</li>
-                            <li class="list-group-item list-group-item-action">The Cost of Trump's Aid Freeze in the Trenches of Ukraine's War</li>
-                            <li class="list-group-item list-group-item-action">I Was An NBA Wife. Here's How It Affected My Mental Health.</li>
-                            <li class="list-group-item list-group-item-action">How to Get Rid of Skin Tags, According to a Dermatologist</li>
-                            <li class="list-group-item list-group-item-action">Check Houston traffic map for current road conditions</li>
-                            <li class="list-group-item list-group-item-action">Should NFL be able to fine players for criticizing officiating?</li>
-                            <li class="list-group-item list-group-item-action">How to record your screen on Windows, macOS, iOS or Android</li>
-                        </ul>
+                        <hr>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="https://assets.msn.com/labs/mind/AAGH0ET.html" class="btn btn-outline-thema">Go to the original article</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,84 +82,59 @@
     </div>
     <br><br>
     
-    <!-- News list -->
-    <div id="news_list">
+    <!-- Recommended news list -->
+    <div id="recommended_news_list">
         <div class="container">
             <table class="table table-hover">
                 <thead>
                     <tr class="text-center thead-dark">
-                        <th style="width:10%">No.</th>
                         <th class="text-start">News Title</th>
                         <th style="width:15%">Category</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr class="text-center">
-                        <td>10</td>
                         <td class="text-start"><a href="#">Young Northeast Florida fans flock to U.S. women's soccer</a></td>
                         <td><a href="#">Sports</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>9</td>
                         <td class="text-start"><a href="#">CNN reporter: This is the tense calm after protester shot</a></td>
                         <td><a href="#">Entertainment</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>8</td>
                         <td class="text-start"><a href="#">Adapting, Learning And Soul Searching: Reflecting On Woolsey Fire</a></td>
                         <td><a href="#">Weather</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>7</td>
                         <td class="text-start"><a href="#">Family says 13-year-old Broadway star died from massive asthma attack</a></td>
                         <td><a href="#">Life</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>6</td>
                         <td class="text-start"><a href="#">Devils strike fast, hold off Canucks 2-1</a></td>
                         <td><a href="#">Sports</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>5</td>
                         <td class="text-start"><a href="#">St. Dominic soccer player tries to kick cancer to the curb</a></td>
                         <td><a href="#">Sports</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>4</td>
                         <td class="text-start"><a href="#">Mansion Monday: Contemporary Des Moines home is one of the most unique in the city</a></td>
                         <td><a href="#">Finance</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>3</td>
                         <td class="text-start"><a href="#">How the Sounders won MLS Cup</a></td>
                         <td><a href="#">Sports</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>2</td>
                         <td class="text-start"><a href="#">Best Sports Car Deals for October</a></td>
                         <td><a href="#">Autos</a></td>
                     </tr>
                     <tr class="text-center">
-                        <td>1</td>
                         <td class="text-start"><a href="#">Shall we dance: Sports stars shake their leg</a></td>
                         <td><a href="#">Sports</a></td>
                     </tr>
                 </tbody>
             </table>
-            
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link">Prev</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                    </li>
-                </ul>
-            </nav>
         </div>
     </div>
     
@@ -179,7 +146,7 @@
     <!-- bootstrap js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <!-- scripts js -->
-    <script type="text/javascript" src="static/js/function.js"></script>
-    <script type="text/javascript" src="static/js/index_ready.js"></script>
+    <script type="text/javascript" src="../static/js/function.js"></script>
+    <script type="text/javascript" src="../static/js/detail_ready.js"></script>
 </body>
 </html>

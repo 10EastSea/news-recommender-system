@@ -1,4 +1,4 @@
-/* index.html document ready */
+/* detail.html document ready */
 function mobileView() {
     var width_size = window.outerWidth;    
     if(width_size < 768) {
@@ -35,9 +35,4 @@ function mobileView() {
 
 $(document).ready(function () {
     mobileView();
-    
-    $("#main_impression_img").click(function() {
-        var url = "/detail/" + $("#main_impression_id").text();
-        $(location).attr("href", url);
-    });
 });
