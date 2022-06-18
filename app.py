@@ -10,6 +10,10 @@ def news_home():
 def news_detail(news_id):
     return render_template("detail.html")
 
+@app.route("/category/<category_name>")
+def news_category(category_name):
+    return render_template("category.html")
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404

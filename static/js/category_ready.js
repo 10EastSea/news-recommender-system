@@ -1,3 +1,3 @@
-/* detail.html document ready */
+/* category.html document ready */
 $(document).ready(function () {
 });
