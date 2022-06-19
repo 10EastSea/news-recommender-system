@@ -20,19 +20,66 @@
     </header>
 
     <!-- Navi -->
-    <!-- 해당 카테고리에 <a class="nav-link active" aria-current="page" href=".."> 추가 -->
     <div id="navi">
         <div class="container">
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/news">News</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/sports">Sports</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/life">Life</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/finance">Finance</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/travel">Travel</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/entertainment">Entertainment</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/weather">Weather</a></li>
-                <li class="nav-item"><a class="nav-link" href="/category/autos">Autos</a></li>
+                <li class="nav-item">
+                    {% if category == "news" %}
+                    <a class="nav-link active" aria-current="page" href="#">News</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/news">News</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if category == "sports" %}
+                    <a class="nav-link active" aria-current="page" href="#">Sports</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/sports">Sports</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if category == "life" %}
+                    <a class="nav-link active" aria-current="page" href="#">Life</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/life">Life</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if category == "finance" %}
+                    <a class="nav-link active" aria-current="page" href="#">Finance</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/finance">Finance</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if category == "travel" %}
+                    <a class="nav-link active" aria-current="page" href="#">Travel</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/travel">Travel</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if category == "entertainment" %}
+                    <a class="nav-link active" aria-current="page" href="#">Entertainment</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/entertainment">Entertainment</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if category == "weather" %}
+                    <a class="nav-link active" aria-current="page" href="#">Weather</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/weather">Weather</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if category == "autos" %}
+                    <a class="nav-link active" aria-current="page" href="#">Autos</a>
+                    {% else %}
+                    <a class="nav-link" href="/category/autos">Autos</a>
+                    {% endif %}
+                </li>
             </ul>
         </div>
     </div>
@@ -45,26 +92,19 @@
                     <div id="main_impression_img" class="card">
                         <div class="card-body"></div>
                         <div class="card-footer">
-                            <span id="main_impression_category" class="badge text-bg-light">Life</span>
-                            <span id="main_impression_title">The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By</span>
+                            <span id="main_impression_category" class="badge text-bg-light">{{ rec_news_list[0].category.capitalize() }}</span>
+                            <span id="main_impression_title">{{ rec_news_list[0].title }}</span>
                         </div>
                     </div>
-                    <div id="main_impression_id" style="display: none;">N0001</div>
+                    <div id="main_impression_id" style="display: none;">{{ rec_news_list[0].id }}</div>
                 </div>
                 <div id="main_impression_list_layout" class="col-4">
                     <div id="main_impression_list" class="card">
                         <div class="card-header">Recommended News</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-action">The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By</li>
-                            <li class="list-group-item list-group-item-action">Walmart Slashes Prices on Last-Generation iPads</li>
-                            <li class="list-group-item list-group-item-action">50 Worst Habits For Belly Fat</li>
-                            <li class="list-group-item list-group-item-action">Dispose of unwanted prescription drugs during the DEA's Take Back Day</li>
-                            <li class="list-group-item list-group-item-action">The Cost of Trump's Aid Freeze in the Trenches of Ukraine's War</li>
-                            <li class="list-group-item list-group-item-action">I Was An NBA Wife. Here's How It Affected My Mental Health.</li>
-                            <li class="list-group-item list-group-item-action">How to Get Rid of Skin Tags, According to a Dermatologist</li>
-                            <li class="list-group-item list-group-item-action">Check Houston traffic map for current road conditions</li>
-                            <li class="list-group-item list-group-item-action">Should NFL be able to fine players for criticizing officiating?</li>
-                            <li class="list-group-item list-group-item-action">How to record your screen on Windows, macOS, iOS or Android</li>
+                            {% for rec_news in rec_news_list %}
+                            <li class="list-group-item list-group-item-action">{{ rec_news.title }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -84,60 +124,47 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for news in all_news_list %}
                     <tr class="text-center">
-                        <td>10</td>
-                        <td class="text-start"><a href="#">Young Northeast Florida fans flock to U.S. women's soccer</a></td>
+                        <td>{{ loop.index + (page - 1) * limit }}</td>
+                        <td class="text-start"><a href="/detail/{{ news.id }}">{{ news.title }}</a></td>
                     </tr>
-                    <tr class="text-center">
-                        <td>9</td>
-                        <td class="text-start"><a href="#">CNN reporter: This is the tense calm after protester shot</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>8</td>
-                        <td class="text-start"><a href="#">Adapting, Learning And Soul Searching: Reflecting On Woolsey Fire</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>7</td>
-                        <td class="text-start"><a href="#">Family says 13-year-old Broadway star died from massive asthma attack</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>6</td>
-                        <td class="text-start"><a href="#">Devils strike fast, hold off Canucks 2-1</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>5</td>
-                        <td class="text-start"><a href="#">St. Dominic soccer player tries to kick cancer to the curb</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>4</td>
-                        <td class="text-start"><a href="#">Mansion Monday: Contemporary Des Moines home is one of the most unique in the city</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>3</td>
-                        <td class="text-start"><a href="#">How the Sounders won MLS Cup</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>2</td>
-                        <td class="text-start"><a href="#">Best Sports Car Deals for October</a></td>
-                    </tr>
-                    <tr class="text-center">
-                        <td>1</td>
-                        <td class="text-start"><a href="#">Shall we dance: Sports stars shake their leg</a></td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
             
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
+                    {% if block_start - 1 > 0 %}
+                    <li class="page-item">
+                        <a class="page-link" href="/category/{{ category }}?page={{ block_start-1 }}">Prev</a>
+                    </li>
+                    {% else %}
                     <li class="page-item disabled">
                         <a class="page-link">Prev</a>
                     </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    {% endif %}
+                    
+                    {% for i in range(block_start, block_end+1) %}
+                        {% if i > last_page_num %}
+                        {% else %}
+                            {% if i == page %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="/category/{{ category }}?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if last_page_num > block_end %}
                     <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
+                        <a class="page-link" href="/category/{{ category }}?page={{ block_end+1 }}">Next</a>
                     </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link">Next</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>

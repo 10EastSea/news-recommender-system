@@ -12,6 +12,16 @@ collection = db["news"]
 
 
 ''' Data '''
+ALL_CNT = 101527
+NEWS_CNT = 30478 + 2 + 1
+SPORTS_CNT = 32020
+LIFE_CNT = 4570 + 4418 + 2929 + 104
+FINANCE_CNT = 5916
+TRAVEL_CNT = 4955
+ENTERTAINMENT_CNT = 837 + 4569 + 1323 + 1263 + 815 + 1
+WEATHER_CNT = 4255
+AUTOS_CNT = 3071
+
 news_list = []
 def cursor_to_list(mongodb_results):
     results = []
@@ -29,16 +39,40 @@ def cursor_to_list(mongodb_results):
         results.append(news)
     return results
 
+def news_data_formating(news):
+    news['category'] = category_smoothing(news['category'])
+    news['body'] = ''.join(news['body'])
+    return news
+
 def category_smoothing(category):
     if category in ["news", "middleeast", "northamerica"]: category = "news"
     elif category in ["lifestyle", "foodanddrink", "health", "kids"]: category = "life"
     elif category in ["entertainment", "video", "tv", "music", "movies", "games"]: category = "entertainment"
     return category
 
-def news_data_formating(news):
-    news['category'] = category_smoothing(news['category'])
-    news['body'] = ''.join(news['body'])
-    return news
+def category_desmoothing(category):
+    categorys = []
+    if category == "news": categorys = [{"category": "news"}, {"category": "middleeast"}, {"category": "northamerica"}]
+    elif category == "sports": categorys = [{"category": "sports"}]
+    elif category == "life": categorys = [{"category": "lifestyle"}, {"category": "foodanddrink"}, {"category": "health"}, {"category": "kids"}]
+    elif category == "finance": categorys = [{"category": "finance"}]
+    elif category == "travel": categorys = [{"category": "travel"}]
+    elif category == "entertainment": categorys = [{"category": "entertainment"}, {"category": "video"}, {"category": "tv"}, {"category": "music"}, {"category": "movies"}, {"category": "games"}]
+    elif category == "weather": categorys = [{"category": "weather"}]
+    elif category == "autos": categorys = [{"category": "autos"}]
+    return categorys
+
+def category_count(category):
+    count = 0
+    if category == "news": count = NEWS_CNT
+    elif category == "sports": count = SPORTS_CNT
+    elif category == "life": count = LIFE_CNT
+    elif category == "finance": count = FINANCE_CNT
+    elif category == "travel": count = TRAVEL_CNT
+    elif category == "entertainment": count = ENTERTAINMENT_CNT
+    elif category == "weather": count = WEATHER_CNT
+    elif category == "autos": count = AUTOS_CNT
+    return count
 
 
 ''' Routing '''
@@ -49,7 +83,7 @@ def news_home():
     
     # all news setting
     all_news_list = cursor_to_list(collection.find({}).skip((page - 1) * limit).limit(limit))
-    all_news_count = 101527 # collection.find({}).count() 혹은 collection.estimated_document_count()
+    all_news_count = ALL_CNT # collection.estimated_document_count()
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
     # block setting
@@ -59,7 +93,7 @@ def news_home():
     block_end = block_start + (block_size - 1) # 현재 block의 맨 마지막 page number
     
     # recommended news setting
-    rec_news_list = news_list[:10]
+    rec_news_list = news_list[:10] # !!impression 추천 적용
     
     return render_template("index.html", rec_news_list=rec_news_list, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
 
@@ -70,13 +104,30 @@ def news_detail(news_id):
     news = news_data_formating(news)
     
     # recommended news setting
-    rec_news_list = news_list[:10]
+    rec_news_list = news_list[:10] # !!해당 뉴스 기반 추천 적용
     
     return render_template("detail.html", news=news, rec_news_list=rec_news_list)
 
-@app.route("/category/<category_name>")
-def news_category(category_name):
-    return render_template("category.html")
+@app.route("/category/<category>")
+def news_category(category):
+    page = request.args.get("page", type=int, default=1)
+    limit = 10
+    
+    # all news setting
+    all_news_list = cursor_to_list(collection.find({"$or": category_desmoothing(category)}).skip((page - 1) * limit).limit(limit))
+    all_news_count = category_count(category)
+    last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
+    
+    # block setting
+    block_size = 10 # 한 페이지에 표시할 block size
+    block_num = int((page - 1) / block_size) # 현재 block number
+    block_start = (block_size * block_num) + 1 # 현재 block의 맨 첫번째 page number
+    block_end = block_start + (block_size - 1) # 현재 block의 맨 마지막 page number
+    
+    # recommended news setting
+    rec_news_list = all_news_list[:10] # !!카테고리 별 추천 적용
+    
+    return render_template("category.html", category=category, rec_news_list=rec_news_list, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -90,8 +141,5 @@ def method():
 
 ''' main '''
 if __name__ == "__main__":
-    # data setting
-    news_list = cursor_to_list(collection.find().limit(50))
-    
-    # app runing
+    news_list = cursor_to_list(collection.find().limit(10))
     app.run(host='0.0.0.0', port=5000, debug=True)
