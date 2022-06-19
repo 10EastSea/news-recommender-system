@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from pymongo import MongoClient
+import math
 
 
 ''' Initial Setting '''
@@ -43,13 +44,24 @@ def news_data_formating(news):
 ''' Routing '''
 @app.route("/")
 def news_home():
+    page = request.args.get("page", type=int, default=1)
+    limit = 10
+    
+    # all news setting
+    all_news_list = cursor_to_list(collection.find({}).skip((page - 1) * limit).limit(limit))
+    all_news_count = 101527 # collection.find({}).count() 혹은 collection.estimated_document_count()
+    last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
+    
+    # block setting
+    block_size = 10 # 한 페이지에 표시할 block size
+    block_num = int((page - 1) / block_size) # 현재 block number
+    block_start = (block_size * block_num) + 1 # 현재 block의 맨 첫번째 page number
+    block_end = block_start + (block_size - 1) # 현재 block의 맨 마지막 page number
+    
     # recommended news setting
     rec_news_list = news_list[:10]
     
-    # all news setting
-    all_news_list = news_list
-    
-    return render_template("index.html", rec_news_list=rec_news_list, all_news_list=news_list)
+    return render_template("index.html", rec_news_list=rec_news_list, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
 
 @app.route("/detail/<news_id>")
 def news_detail(news_id):
@@ -78,8 +90,8 @@ def method():
 
 ''' main '''
 if __name__ == "__main__":
-    # set data
+    # data setting
     news_list = cursor_to_list(collection.find().limit(50))
     
-    # run app
+    # app runing
     app.run(host='0.0.0.0', port=5000, debug=True)
