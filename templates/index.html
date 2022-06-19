@@ -23,33 +23,15 @@
     <div id="navi">
         <div class="container">
             <ul class="nav nav-pills justify-content-center">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/news">News</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/sports">Sports</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/life">Life</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/finance">Finance</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/travel">Travel</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/entertainment">Entertainment</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/weather">Weather</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category/autos">Autos</a>
-                </li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/news">News</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/sports">Sports</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/life">Life</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/finance">Finance</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/travel">Travel</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/entertainment">Entertainment</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/weather">Weather</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category/autos">Autos</a></li>
             </ul>
         </div>
     </div>
@@ -62,26 +44,19 @@
                     <div id="main_impression_img" class="card">
                         <div class="card-body"></div>
                         <div class="card-footer">
-                            <span id="main_impression_category" class="badge text-bg-light">Life</span>
-                            <span id="main_impression_title">The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By</span>
+                            <span id="main_impression_category" class="badge text-bg-light">{{ rec_news_list[0].category.capitalize() }}</span>
+                            <span id="main_impression_title">{{ rec_news_list[0].title }}</span>
                         </div>
                     </div>
-                    <div id="main_impression_id" style="display: none;">N0001</div>
+                    <div id="main_impression_id" style="display: none;">{{ rec_news_list[0].id }}</div>
                 </div>
                 <div id="main_impression_list_layout" class="col-4">
                     <div id="main_impression_list" class="card">
                         <div class="card-header">Recommended News</div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-action">The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By</li>
-                            <li class="list-group-item list-group-item-action">Walmart Slashes Prices on Last-Generation iPads</li>
-                            <li class="list-group-item list-group-item-action">50 Worst Habits For Belly Fat</li>
-                            <li class="list-group-item list-group-item-action">Dispose of unwanted prescription drugs during the DEA's Take Back Day</li>
-                            <li class="list-group-item list-group-item-action">The Cost of Trump's Aid Freeze in the Trenches of Ukraine's War</li>
-                            <li class="list-group-item list-group-item-action">I Was An NBA Wife. Here's How It Affected My Mental Health.</li>
-                            <li class="list-group-item list-group-item-action">How to Get Rid of Skin Tags, According to a Dermatologist</li>
-                            <li class="list-group-item list-group-item-action">Check Houston traffic map for current road conditions</li>
-                            <li class="list-group-item list-group-item-action">Should NFL be able to fine players for criticizing officiating?</li>
-                            <li class="list-group-item list-group-item-action">How to record your screen on Windows, macOS, iOS or Android</li>
+                            {% for rec_news in rec_news_list %}
+                            <li class="list-group-item list-group-item-action">{{ rec_news.title }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
