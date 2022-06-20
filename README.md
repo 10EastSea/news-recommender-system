@@ -5,6 +5,7 @@
 - pip
   - Flask
   - pymongo
+  - google-images-download
 
 ## Set Up
 ### Data Setting
@@ -13,6 +14,7 @@
 ### Pip Install
 - `pip install Flask` 실행
 - `pip install pymongo` 실행
+- `pip install git+https://github.com/Joeclinton1/google-images-download.git` 실행
 ### Run
 - `python app.py` 실행
 
