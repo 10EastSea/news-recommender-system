@@ -90,6 +90,12 @@ footer { margin: 50px; }
     white-space: nowrap;
 }
 
+#news_img {
+    width: 100%;
+    height: 400px;
+    
+    object-fit: contain;
+}
 #news_content { font-size: large; }
 /* 여기까지 */
 
@@ -106,5 +112,6 @@ footer { margin: 50px; }
     h1 { font-size: xx-large; }
     #navi { margin-bottom: 30px; }
     
+    #news_img { height: 200px; }
     #news_content { font-size: medium; }
 }

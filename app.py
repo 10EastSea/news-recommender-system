@@ -1,6 +1,8 @@
 from flask import Flask, request, render_template, jsonify
 from pymongo import MongoClient
+from google_images_download import google_images_download
 import math
+import os
 
 
 ''' Initial Setting '''
@@ -75,6 +77,41 @@ def category_count(category):
     return count
 
 
+''' Image '''
+def download_img(news):
+    response = google_images_download.googleimagesdownload()
+    keywords = news["title"].replace(",","")
+    arguments = {"keywords": keywords, "limit": 1, "output_directory": "static/img", "no_directory": True, "prefix": news["id"]}
+    paths = response.download(arguments)
+
+def get_img_path(news):
+    file_list = os.listdir('static/img')
+    img_path = "/static/img/default.jpg"
+    
+    is_already_in = False
+    for f in file_list:
+        if news["id"] in f:
+            img_path = "/static/img/" + f
+            is_already_in = True
+            break
+    
+    if not is_already_in:
+        download_img(news)
+        file_list = os.listdir('static/img')
+        for f in file_list:
+            if news["id"] in f:
+                img_path = "/static/img/" + f
+                is_already_in = True
+                break
+        
+    return img_path
+
+def get_img_paths(news_list):
+    img_paths = []
+    for news in news_list: img_paths.append(get_img_path(news))
+    return img_paths
+
+
 ''' Routing '''
 @app.route("/")
 def news_home():
@@ -94,8 +131,9 @@ def news_home():
     
     # recommended news setting
     rec_news_list = news_list[:10] # !!impression 추천 적용
+    img_paths = get_img_paths(rec_news_list)
     
-    return render_template("index.html", rec_news_list=rec_news_list, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
+    return render_template("index.html", rec_news_list=rec_news_list, img_paths=img_paths, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
 
 @app.route("/detail/<news_id>")
 def news_detail(news_id):
@@ -103,10 +141,13 @@ def news_detail(news_id):
     news = collection.find_one({"id": news_id})
     news = news_data_formating(news)
     
+    # get img path
+    img_path = get_img_path(news)
+    
     # recommended news setting
     rec_news_list = news_list[:10] # !!해당 뉴스 기반 추천 적용
     
-    return render_template("detail.html", news=news, rec_news_list=rec_news_list)
+    return render_template("detail.html", news=news, img_path=img_path, rec_news_list=rec_news_list)
 
 @app.route("/category/<category>")
 def news_category(category):
