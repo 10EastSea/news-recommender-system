@@ -41,7 +41,7 @@
         <div class="container">
             <div class="row">
                 <div id="main_impression_img_layout" class="col-8">
-                    <div id="main_impression_img" class="card">
+                    <div id="main_impression_img" class="card" style='background-image: url("{{ img_paths[0] }}")'>
                         <div class="card-body"></div>
                         <div class="card-footer">
                             <span id="main_impression_category" class="badge text-bg-light">{{ rec_news_list[0].category.capitalize() }}</span>
@@ -55,7 +55,10 @@
                         <div class="card-header">Recommended News</div>
                         <ul class="list-group list-group-flush">
                             {% for rec_news in rec_news_list %}
-                            <li class="list-group-item list-group-item-action">{{ rec_news.title }}</li>
+                            <li class="rec_news_list_title list-group-item list-group-item-action" onclick="changeMainImpression({{ loop.index0 }});">{{ rec_news.title }}</li>
+                            <div class="rec_news_list_id" style="display: none;">{{ rec_news.id }}</div>
+                            <div class="rec_news_list_category" style="display: none;">{{ rec_news.category }}</div>
+                            <div class="rec_news_list_img_path" style="display: none;">{{ img_paths[loop.index0] }}</div>
                             {% endfor %}
                         </ul>
                     </div>

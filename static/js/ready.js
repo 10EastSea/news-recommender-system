@@ -33,6 +33,24 @@ function mobileView() {
     });
 }
 
+function changeMainImpression(idx) {
+    var news_id = $($(".rec_news_list_id")[idx]).text();
+    var news_category = $($(".rec_news_list_category")[idx]).text();
+    var news_title = $($(".rec_news_list_title")[idx]).text();
+    var news_img_path = $($(".rec_news_list_img_path")[idx]).text()
+    
+    // console.log(news_title);
+    // console.log(news_id);
+    // console.log(capitalize(news_category));
+    // console.log(news_img_path);
+    
+    $("#main_impression_id").text(news_id);
+    $("#main_impression_category").text(capitalize(news_category));
+    $("#main_impression_title").text(news_title);
+    // $("#main_impression_img").css("background-image", 'url("' + news_img_path + '")');
+    document.getElementById('main_impression_img').style.backgroundImage = `url("${news_img_path}")`;
+}
+
 $(document).ready(function () {
     mobileView();
     

@@ -86,7 +86,7 @@ def download_img(news):
 
 def get_img_path(news):
     file_list = os.listdir('static/img')
-    img_path = "/static/img/default.jpg"
+    img_path = "/static/img/default.png"
     
     is_already_in = False
     for f in file_list:
@@ -124,7 +124,7 @@ def news_home():
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
     # block setting
-    block_size = 10 # 한 페이지에 표시할 block size
+    block_size = 5 # 한 페이지에 표시할 block size
     block_num = int((page - 1) / block_size) # 현재 block number
     block_start = (block_size * block_num) + 1 # 현재 block의 맨 첫번째 page number
     block_end = block_start + (block_size - 1) # 현재 block의 맨 마지막 page number
@@ -167,8 +167,9 @@ def news_category(category):
     
     # recommended news setting
     rec_news_list = all_news_list[:10] # !!카테고리 별 추천 적용
+    img_paths = get_img_paths(rec_news_list)
     
-    return render_template("category.html", category=category, rec_news_list=rec_news_list, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
+    return render_template("category.html", category=category, rec_news_list=rec_news_list, img_paths=img_paths, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
 
 @app.errorhandler(404)
 def page_not_found(e):
