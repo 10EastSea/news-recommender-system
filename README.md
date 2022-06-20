@@ -16,6 +16,7 @@
 - `pip install pymongo` 실행
 - `pip install git+https://github.com/Joeclinton1/google-images-download.git` 실행
 ### Run
+- `mongod` 서버 실행
 - `python app.py` 실행
 
 ## Site
