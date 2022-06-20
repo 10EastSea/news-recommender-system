@@ -160,7 +160,7 @@ def news_category(category):
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
     # block setting
-    block_size = 10 # 한 페이지에 표시할 block size
+    block_size = 5 # 한 페이지에 표시할 block size
     block_num = int((page - 1) / block_size) # 현재 block number
     block_start = (block_size * block_num) + 1 # 현재 block의 맨 첫번째 page number
     block_end = block_start + (block_size - 1) # 현재 block의 맨 마지막 page number

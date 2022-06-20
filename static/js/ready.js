@@ -1,9 +1,10 @@
-/* index.html document ready */
+/* .html document ready */
 function mobileView() {
     var width_size = window.outerWidth;    
     if(width_size < 768) {
         $("#main_impression_img_layout").removeClass("col-8");
         $("#main_impression_list_layout").removeClass("col-4");
+        $("#detail_content").removeClass("card");
 
         $("#main_impression_img_layout").addClass("col");
         $("#main_impression_list_layout").addClass("col mt-1");
@@ -13,6 +14,7 @@ function mobileView() {
 
         $("#main_impression_img_layout").addClass("col-8");
         $("#main_impression_list_layout").addClass("col-4");
+        $("#detail_content").addClass("card");
     }
     
     $(window).resize(function() {
@@ -20,6 +22,7 @@ function mobileView() {
         if(width_size < 768) {
             $("#main_impression_img_layout").removeClass("col-8");
             $("#main_impression_list_layout").removeClass("col-4");
+            $("#detail_content").removeClass("card");
             
             $("#main_impression_img_layout").addClass("col");
             $("#main_impression_list_layout").addClass("col mt-1");
@@ -29,6 +32,7 @@ function mobileView() {
             
             $("#main_impression_img_layout").addClass("col-8");
             $("#main_impression_list_layout").addClass("col-4");
+            $("#detail_content").addClass("card");
         }
     });
 }
