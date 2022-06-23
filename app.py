@@ -25,6 +25,7 @@ WEATHER_CNT = 4255
 AUTOS_CNT = 3071
 
 news_list = []
+tmp_category, tmp_category_list = None, []
 def cursor_to_list(mongodb_results):
     results = []
     for item in mongodb_results:
@@ -151,6 +152,9 @@ def news_detail(news_id):
 
 @app.route("/category/<category>")
 def news_category(category):
+    global tmp_category
+    global tmp_category_list
+    
     page = request.args.get("page", type=int, default=1)
     limit = 10
     
@@ -166,7 +170,11 @@ def news_category(category):
     block_end = block_start + (block_size - 1) # 현재 block의 맨 마지막 page number
     
     # recommended news setting
-    rec_news_list = all_news_list[:10] # !!카테고리 별 추천 적용
+    rec_news_list = []
+    if tmp_category is None or tmp_category != category: # 같은 카테고리 내에서 이동하는 경우가 아닌경우
+        tmp_category = category
+        tmp_category_list = all_news_list[:10]
+    rec_news_list = tmp_category_list[:10] # !!카테고리 별 추천 적용
     img_paths = get_img_paths(rec_news_list)
     
     return render_template("category.html", category=category, rec_news_list=rec_news_list, img_paths=img_paths, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
