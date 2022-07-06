@@ -1,3 +1,10 @@
+# setting file
 *.DS_Store
-recommenders/
 goorm.manifest
+
+# rec-sys
+recommenders/
+
+# img
+static/img/
+!static/img/default.png
