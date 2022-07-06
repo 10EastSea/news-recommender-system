@@ -7,4 +7,6 @@ recommenders/
 
 # img
 static/img/
+!static/
+!static/img/
 !static/img/default.png
