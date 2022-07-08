@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, session
 from pymongo import MongoClient
 from google_images_download import google_images_download
 import math
@@ -188,6 +188,36 @@ def method():
     if request.method == "GET": return jsonify(news_list)
     elif request.method == "POST": return "POST로 전달"
 
+@app.after_request
+def save_response(r):
+    if request.method == 'POST':
+        return r
+
+    if request.endpoint == 'static':
+        return r
+
+    
+    
+    history = session.get('history', [])
+    print(history)
+    
+    
+    if history:
+        # 새로 고침 시
+        if (history[-1][0] == request.endpoint and
+                history[-1][1] == request.view_args):
+            return r
+
+    history.append([
+        request.endpoint,
+        request.view_args,
+        r.status_code
+    ])
+    
+    session['history'] = history[-5:]
+    return r
+
+app.secret_key = 'secretkey'
 
 ''' main '''
 if __name__ == "__main__":
