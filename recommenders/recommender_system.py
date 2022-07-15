@@ -99,6 +99,8 @@ model.model.load_weights(model_data_path)
 
 test_behaviors_file = './test_behaviors.csv'
 model.test_iterator.init_news(valid_news_file)
+news_vecs = model.run_news(valid_news_file)
+
 model.test_iterator.init_behaviors(test_behaviors_file)
 
 news = {
@@ -110,8 +112,7 @@ add_to_news_candidate(news, mind_iterator=model.test_iterator)
 add_to_user_history(news, mind_iterator=model.test_iterator)
 # model.test_iterator.imprs[0].append(model.test_iterator.nid2index[news['nid']])
 
-
-group_impr_indexes, group_labels, group_preds = model.run_fast_eval(valid_news_file, test_behaviors_file)
+group_impr_indexes, group_labels, group_preds = model.run_fast_eval(valid_news_file, test_behaviors_file, news_vecs)
 
 with open(os.path.join('./', 'prediction.txt'), 'w') as f:
     for impr_index, preds in tqdm(zip(group_impr_indexes, group_preds)):
