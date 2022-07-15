@@ -1,7 +1,10 @@
 from pymongo import MongoClient
 import json
 
-myclient = MongoClient("mongodb://localhost:27017/") 
+# myclient = MongoClient("mongodb://localhost:27017/")
+
+myclient = MongoClient("mongodb://localhost:27018/")
+ 
 db = myclient["news_recsys"]
 collection = db["news"]
 

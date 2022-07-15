@@ -8,7 +8,10 @@ import os
 ''' Initial Setting '''
 app = Flask(__name__)
 
-myclient = MongoClient("mongodb://localhost:27017/") 
+# myclient = MongoClient("mongodb://localhost:27017/") 
+
+# TODO: 나중에 지우고 git 올려야 할 부분
+myclient = MongoClient("mongodb://localhost:27018/")
 db = myclient["news_recsys"]
 collection = db["news"]
 
@@ -195,12 +198,10 @@ def save_response(r):
 
     if request.endpoint == 'static':
         return r
-
     
-    
+    print(request.remote_addr)
     history = session.get('history', [])
     print(history)
-    
     
     if history:
         # 새로 고침 시
@@ -222,4 +223,7 @@ app.secret_key = 'secretkey'
 ''' main '''
 if __name__ == "__main__":
     news_list = cursor_to_list(collection.find().limit(10))
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print(news_list)
+    # app.run(host='0.0.0.0', port=5000, debug=True)
+    # TODO: git push시 변경하여 올리기
+    app.run(host='0.0.0.0', port=5001, debug=True)
