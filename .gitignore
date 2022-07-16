@@ -1,6 +1,11 @@
 # setting file
 *.DS_Store
 goorm.manifest
+.idea/
+
+# python
+*.pyc
+__pycache__/
 
 # rec-sys
-recommenders/MIND_dataset
+recommenders/MIND_dataset/
