@@ -8,15 +8,17 @@ import os
 ''' Initial Setting '''
 app = Flask(__name__)
 
-# myclient = MongoClient("mongodb://localhost:27017/") 
+myclient = MongoClient("mongodb://localhost:27017/") 
 
 # TODO: 나중에 지우고 git 올려야 할 부분
-myclient = MongoClient("mongodb://localhost:27018/")
+# myclient = MongoClient("mongodb://localhost:27018/")
 db = myclient["news_recsys"]
 collection = db["news"]
 
 
 ''' Data '''
+TODAY = "2019-11-11"
+
 ALL_CNT = 101527
 NEWS_CNT = 30478 + 2 + 1
 SPORTS_CNT = 32020
@@ -123,7 +125,7 @@ def news_home():
     limit = 10
     
     # all news setting
-    all_news_list = cursor_to_list(collection.find({}).skip((page - 1) * limit).limit(limit))
+    all_news_list = cursor_to_list(collection.find({"date": TODAY}).skip((page - 1) * limit).limit(limit))
     all_news_count = ALL_CNT # collection.estimated_document_count()
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
@@ -162,7 +164,7 @@ def news_category(category):
     limit = 10
     
     # all news setting
-    all_news_list = cursor_to_list(collection.find({"$or": category_desmoothing(category)}).skip((page - 1) * limit).limit(limit))
+    all_news_list = cursor_to_list(collection.find({"date": TODAY, "$or": category_desmoothing(category)}).skip((page - 1) * limit).limit(limit))
     all_news_count = category_count(category)
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
@@ -222,8 +224,8 @@ app.secret_key = 'secretkey'
 
 ''' main '''
 if __name__ == "__main__":
-    news_list = cursor_to_list(collection.find().limit(10))
+    news_list = cursor_to_list(collection.find({"date": TODAY}).limit(10))
     print(news_list)
-    # app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
     # TODO: git push시 변경하여 올리기
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    # app.run(host='0.0.0.0', port=5001, debug=True)
