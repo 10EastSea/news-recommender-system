@@ -1,0 +1,3 @@
+[submodule "recommenders/recommenders"]
+	path = recommenders/recommenders
+	url = https://github.com/vinnyshin/recommenders.git
