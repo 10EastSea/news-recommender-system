@@ -6,6 +6,8 @@
   - Flask
   - pymongo
   - google-images-download
+  - recommenders
+  - tensorflow
 
 ## Set Up
 ### Data Setting
