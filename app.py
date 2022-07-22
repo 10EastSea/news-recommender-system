@@ -8,10 +8,7 @@ import os
 ''' Initial Setting '''
 app = Flask(__name__)
 
-myclient = MongoClient("mongodb://localhost:27017/")
-
-# TODO: 나중에 지우고 git 올려야 할 부분
-# myclient = MongoClient("mongodb://localhost:27018/")
+myclient = MongoClient("mongodb://localhost:27017/") # 실행시 포트 수정
 db = myclient["news_recsys"]
 collection = db["news"]
 
@@ -34,14 +31,16 @@ tmp_category, tmp_category_list = None, []
 def cursor_to_list(mongodb_results):
     results = []
     for item in mongodb_results:
-        news = {"id":None, "category":None, "title":None, "url":None, "nid":None, "body":None}
+        news = {"id":None, "date":None, "category":None, "title":None, "url":None, "nid":None, "body":None, "hits":None}
         
         news['id'] = item['id']
+        news['date'] = item['date']
         news['category'] = item['category']
         news['title'] = item['title']
         news['url'] = item['url']
         news['nid'] = item['nid']
         news['body'] = item['body']
+        news['hits'] = item['hits']
         
         news = news_data_formating(news)
         results.append(news)
@@ -82,6 +81,9 @@ def category_count(category):
     elif category == "autos": count = AUTOS_CNT
     return count
 
+def sort_hits(news_list):
+    print(news_list[:10])
+
 
 ''' Image '''
 def download_img(news):
@@ -121,11 +123,13 @@ def get_img_paths(news_list):
 ''' Routing '''
 @app.route("/")
 def news_home():
+    global news_list
+    
     page = request.args.get("page", type=int, default=1)
     limit = 10
     
     # all news setting
-    all_news_list = cursor_to_list(collection.find({"date": TODAY}).skip((page - 1) * limit).limit(limit))
+    all_news_list = cursor_to_list(collection.find().skip((page - 1) * limit).limit(limit)) # find({"date": TODAY}) -> find()
     all_news_count = ALL_CNT # collection.estimated_document_count()
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
@@ -143,6 +147,8 @@ def news_home():
 
 @app.route("/detail/<news_id>")
 def news_detail(news_id):
+    global news_list
+    
     # detail new setting
     news = collection.find_one({"id": news_id})
     news = news_data_formating(news)
@@ -157,6 +163,7 @@ def news_detail(news_id):
 
 @app.route("/category/<category>")
 def news_category(category):
+    global news_list
     global tmp_category
     global tmp_category_list
     
@@ -164,7 +171,7 @@ def news_category(category):
     limit = 10
     
     # all news setting
-    all_news_list = cursor_to_list(collection.find({"date": TODAY, "$or": category_desmoothing(category)}).skip((page - 1) * limit).limit(limit))
+    all_news_list = cursor_to_list(collection.find({"$or": category_desmoothing(category)}).skip((page - 1) * limit).limit(limit)) # find({"date": TODAY}) -> find()
     all_news_count = category_count(category)
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
@@ -175,10 +182,13 @@ def news_category(category):
     block_end = block_start + (block_size - 1) # 현재 block의 맨 마지막 page number
     
     # recommended news setting
-    rec_news_list = []
     if tmp_category is None or tmp_category != category: # 같은 카테고리 내에서 이동하는 경우가 아닌경우
         tmp_category = category
-        tmp_category_list = all_news_list[:10]
+        tmp_category_list = []
+        for news in news_list:
+            if news['category'] == category: tmp_category_list.append(news)
+            if len(tmp_category_list) == 10: break
+    
     rec_news_list = tmp_category_list[:10] # !!카테고리 별 추천 적용
     img_paths = get_img_paths(rec_news_list)
     
@@ -225,5 +235,6 @@ app.secret_key = 'secretkey'
 
 ''' main '''
 if __name__ == "__main__":
-    news_list = cursor_to_list(collection.find({"date": TODAY}).limit(10))
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    news_list = cursor_to_list(collection.find({"date": TODAY}))
+    news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
+    app.run(host='0.0.0.0', port=5000, debug=True) # 실행시 포트 수정
