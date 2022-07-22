@@ -8,10 +8,10 @@ import os
 ''' Initial Setting '''
 app = Flask(__name__)
 
-# myclient = MongoClient("mongodb://localhost:27017/")
+myclient = MongoClient("mongodb://localhost:27017/")
 
 # TODO: 나중에 지우고 git 올려야 할 부분
-myclient = MongoClient("mongodb://localhost:27018/")
+# myclient = MongoClient("mongodb://localhost:27018/")
 db = myclient["news_recsys"]
 collection = db["news"]
 
@@ -200,7 +200,7 @@ def save_response(r):
 
     if request.endpoint == 'static':
         return r
-
+    
     history = session.get('history', [])
     
     if history:
@@ -214,7 +214,7 @@ def save_response(r):
             news_id = request.view_args.get('news_id')
             if news_id not in history:
                 history.append(news_id)
-                add_to_user_history(news_id)
+                # add_to_user_history(news_id)
                 print(history)
 
     #TODO: hist size 찾아서 넣기
@@ -226,4 +226,4 @@ app.secret_key = 'secretkey'
 ''' main '''
 if __name__ == "__main__":
     news_list = cursor_to_list(collection.find({"date": TODAY}).limit(10))
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
