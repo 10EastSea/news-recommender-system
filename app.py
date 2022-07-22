@@ -200,10 +200,8 @@ def save_response(r):
 
     if request.endpoint == 'static':
         return r
-    
-    print(request.remote_addr)
+
     history = session.get('history', [])
-    print(history)
     
     if history:
         # 새로 고침 시
@@ -211,12 +209,15 @@ def save_response(r):
                 history[-1][1] == request.view_args):
             return r
 
-    history.append([
-        request.endpoint,
-        request.view_args,
-        r.status_code
-    ])
-    
+    if request.view_args is not None:
+        if request.view_args.get('news_id') is not None:
+            news_id = request.view_args.get('news_id')
+            if news_id not in history:
+                history.append(news_id)
+                add_to_user_history(news_id)
+                print(history)
+
+    #TODO: hist size 찾아서 넣기
     session['history'] = history[-5:]
     return r
 
@@ -225,7 +226,4 @@ app.secret_key = 'secretkey'
 ''' main '''
 if __name__ == "__main__":
     news_list = cursor_to_list(collection.find({"date": TODAY}).limit(10))
-    print(news_list)
-    # app.run(host='0.0.0.0', port=5000, debug=True)
-    # TODO: git push시 변경하여 올리기
     app.run(host='0.0.0.0', port=5001, debug=True)
