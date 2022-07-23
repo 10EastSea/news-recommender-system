@@ -1,10 +1,12 @@
 from flask import Flask, request, render_template, jsonify, session
 from pymongo import MongoClient
 from google_images_download import google_images_download
+from dateutil.parser import parse
 # from celery import Celery
 # from tasks import get_today_news_list
 import math
 import os
+import datetime
 
 
 ''' Initial Setting '''
@@ -146,7 +148,7 @@ def news_home():
     limit = 10
     
     # all news setting
-    all_news_list = cursor_to_list(collection.find().skip((page - 1) * limit).limit(limit)) # find({"date": TODAY}) -> find()
+    all_news_list = cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}}).skip((page - 1) * limit).limit(limit)) # find({"date": TODAY}) -> find()
     all_news_count = ALL_CNT # collection.estimated_document_count()
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
@@ -188,7 +190,7 @@ def news_category(category):
     limit = 10
     
     # all news setting
-    all_news_list = cursor_to_list(collection.find({"$or": category_desmoothing(category)}).skip((page - 1) * limit).limit(limit)) # find({"date": TODAY}) -> find()
+    all_news_list = cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": category_desmoothing(category)}).skip((page - 1) * limit).limit(limit)) # find({"date": TODAY}) -> find()
     all_news_count = category_count(category)
     last_page_num = math.ceil(all_news_count / limit) # 마지막 page number
     
@@ -264,9 +266,29 @@ def save_response(r):
     session['history'] = history[-5:]
     return r
 
-
 ''' main '''
 if __name__ == "__main__":
+    # set cnt data
+    ALL_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}})))
+    NEWS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "news"}, {"category": "middleeast"}, {"category": "northamerica"}]})))
+    SPORTS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "sports"}]})))
+    LIFE_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "lifestyle"}, {"category": "foodanddrink"}, {"category": "health"}, {"category": "kids"}]})))
+    FINANCE_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "finance"}]})))
+    TRAVEL_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "travel"}]})))
+    ENTERTAINMENT_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "entertainment"}, {"category": "video"}, {"category": "tv"}, {"category": "music"}, {"category": "movies"}, {"category": "games"}]})))
+    WEATHER_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "weather"}]})))
+    AUTOS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "autos"}]})))
+    print("\nALL_CNT", ALL_CNT)
+    print("NEWS_CNT", NEWS_CNT)
+    print("SPORTS_CNT", SPORTS_CNT)
+    print("LIFE_CNT", LIFE_CNT)
+    print("FINANCE_CNT", FINANCE_CNT)
+    print("TRAVEL_CNT", TRAVEL_CNT)
+    print("ENTERTAINMENT_CNT", ENTERTAINMENT_CNT)
+    print("WEATHER_CNT", WEATHER_CNT)
+    print("AUTOS_CNT", AUTOS_CNT)
+    
+    
     # get today's news
     news_list = cursor_to_list(collection.find({"date": TODAY}))
     news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
