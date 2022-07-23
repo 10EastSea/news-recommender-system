@@ -1,16 +1,26 @@
 from flask import Flask, request, render_template, jsonify, session
 from pymongo import MongoClient
 from google_images_download import google_images_download
+# from celery import Celery
+# from tasks import get_today_news_list
 import math
 import os
 
 
 ''' Initial Setting '''
 app = Flask(__name__)
+app.secret_key = 'secretkey' # 세션을 위해 필요한 값
+# app.config.update(
+#     CELERY_BROKER_URL='redis://localhost:6379',
+#     CELERY_RESULT_BACKEND='redis://localhost:6379'
+# ) # 비동기 처리를 위해 redis 서버와 celery task에 필요한 설정
 
 myclient = MongoClient("mongodb://localhost:27017/") # 실행시 포트 수정
 db = myclient["news_recsys"]
 collection = db["news"]
+
+# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+# celery.conf.update(app.config)
 
 
 ''' Data '''
@@ -120,6 +130,13 @@ def get_img_paths(news_list):
     return img_paths
 
 
+# ''' Async '''
+# @celery.task
+# def tasks(today):
+#     time.sleep(5)
+#     return collection.find({"date": today})
+
+
 ''' Routing '''
 @app.route("/")
 def news_home():
@@ -199,9 +216,25 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 @app.route("/test/method", methods=["GET", "POST"])
-def method():
+def test_method():
     if request.method == "GET": return jsonify(news_list)
     elif request.method == "POST": return "POST로 전달"
+    
+# @app.route("/test/async")
+# def test_async():
+#     task = tasks.delay(TODAY)
+#     return jsonify({'id': task.id})
+#     # print(tmp_today_news_list)
+#     # return jsonify(tmp_today_news_list)
+
+# 동작 안함 ㅋㅋ;;
+# @app.route("/session/clear", methods=["POST"])
+# def session_clear():
+#     if request.method == "POST":
+#         if request.args.get('clear', default=False) == "True":
+#             print('clear!')
+#             session.clear()
+#         return "POST로 전달"
 
 @app.after_request
 def save_response(r):
@@ -231,10 +264,11 @@ def save_response(r):
     session['history'] = history[-5:]
     return r
 
-app.secret_key = 'secretkey'
 
 ''' main '''
 if __name__ == "__main__":
+    # get today's news
     news_list = cursor_to_list(collection.find({"date": TODAY}))
     news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
+    
     app.run(host='0.0.0.0', port=5000, debug=True) # 실행시 포트 수정
