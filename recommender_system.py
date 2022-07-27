@@ -67,7 +67,7 @@ def init_model(data_path, impr_file) -> NRMSModel:
     iterator = MINDIterator
 
     model = NRMSModel(hparams, iterator, seed=seed)
-    model_data_path = './MIND_dataset/models/nrms_ckpt'
+    model_data_path = os.path.join(data_path, 'models', r'nrms_ckpt')
     model.model.load_weights(model_data_path)
 
     model.test_iterator.init_news(train_news_file)
@@ -97,7 +97,8 @@ def get_recommendation(model: NRMSModel, news_vecs, data_path):
                 news_idx = model.test_iterator.imprs[0][i]
                 recommendation[rank - 1] = model.test_iterator.index2nid[news_idx]
 
-
+    
+    print(time.time() - start)
     print(recommendation)
     return recommendation
 
@@ -115,8 +116,9 @@ def change_impr(model, data_path, file_name):
     model.test_iterator.imprs[0] = impr
     model.test_iterator.labels[0] = label
 
-
-data_path = './MIND_dataset'
+'''
+아래는 사용 예시
+data_path = './recommenders/MIND_dataset'
 model, news_vecs = init_model(data_path, impr_file='2019-11-11.tsv')
 get_recommendation(model, news_vecs, data_path)
 change_impr(model, data_path, file_name='2019-11-12.tsv')
@@ -124,3 +126,4 @@ get_recommendation(model, news_vecs, data_path)
 add_to_user_history('N25434', model.test_iterator)
 add_to_user_history('N97703', model.test_iterator)
 get_recommendation(model, news_vecs, data_path)
+'''

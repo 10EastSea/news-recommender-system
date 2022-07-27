@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, jsonify, session
 from pymongo import MongoClient
 from google_images_download import google_images_download
 from dateutil.parser import parse
+import recommender_system as rs
 # from celery import Celery
 # from tasks import get_today_news_list
 import math
@@ -240,6 +241,7 @@ def test_method():
 
 @app.after_request
 def save_response(r):
+    global model
     if request.method == 'POST':
         return r
 
@@ -259,6 +261,7 @@ def save_response(r):
             news_id = request.view_args.get('news_id')
             if news_id not in history:
                 history.append(news_id)
+                rs.add_to_user_history('N25434', model.test_iterator)
                 print(history)
 
     session['history'] = history[-50:]
@@ -286,6 +289,8 @@ if __name__ == "__main__":
     print("WEATHER_CNT", WEATHER_CNT)
     print("AUTOS_CNT", AUTOS_CNT)
     
+    data_path = './recommenders/MIND_dataset'
+    # model, news_vecs = rs.init_model(data_path, impr_file='2019-11-11.tsv')
     
     # get today's news
     news_list = cursor_to_list(collection.find({"date": TODAY}))
