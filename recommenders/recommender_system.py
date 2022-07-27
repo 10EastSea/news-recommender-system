@@ -101,7 +101,6 @@ def get_recommendation(model: NRMSModel, news_vecs, data_path):
     print(recommendation)
     return recommendation
 
-
 def change_impr(model, data_path, file_name):
     impr_file = os.path.join(data_path, 'result_11to15', file_name)
     impr = []
