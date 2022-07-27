@@ -214,11 +214,10 @@ def save_response(r):
             news_id = request.view_args.get('news_id')
             if news_id not in history:
                 history.append(news_id)
-                add_to_user_history(news_id)
                 print(history)
 
     #TODO: hist size 찾아서 넣기
-    session['history'] = history[-5:]
+    session['history'] = history[-50:]
     return r
 
 app.secret_key = 'secretkey'
