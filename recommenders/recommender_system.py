@@ -13,10 +13,6 @@ from recommenders.models.newsrec.io.mind_iterator import MINDIterator
 from recommenders.models.newsrec.newsrec_utils import get_mind_data_set
 from recommenders.models.newsrec.newsrec_utils import word_tokenize
 
-print("System version: {}".format(sys.version))
-print("Tensorflow version: {}".format(tf.__version__))
-
-
 # # news는 dict 형식으로 주어야 함
 def add_to_news_candidate(news, mind_iterator):
     nid = news['nid']
@@ -59,7 +55,7 @@ seed = 42
 batch_size = 32
 
 # Options: demo, small, large
-MIND_type = 'demo'
+MIND_type = 'large'
 data_path = './MIND_dataset'
 
 train_news_file = os.path.join(data_path, 'train', r'news.tsv')
@@ -98,9 +94,7 @@ model_data_path = './MIND_dataset/models/nrms_ckpt'
 model.model.load_weights(model_data_path)
 
 test_behaviors_file = './test_behaviors.csv'
-model.test_iterator.init_news(valid_news_file)
-news_vecs = model.run_news(valid_news_file)
-
+model.test_iterator.init_news(train_news_file)
 model.test_iterator.init_behaviors(test_behaviors_file)
 
 news = {
@@ -108,8 +102,11 @@ news = {
     'title': 'The Brands Queen Elizabeth, Prince Charles, and Prince Philip Swear By',
 }
 
+news_vecs = model.run_news(train_news_file)
+
 add_to_news_candidate(news, mind_iterator=model.test_iterator)
 add_to_user_history(news, mind_iterator=model.test_iterator)
+
 # model.test_iterator.imprs[0].append(model.test_iterator.nid2index[news['nid']])
 
 group_impr_indexes, group_labels, group_preds = model.run_fast_eval(valid_news_file, test_behaviors_file, news_vecs)
