@@ -94,9 +94,6 @@ def category_count(category):
     elif category == "autos": count = AUTOS_CNT
     return count
 
-def sort_hits(news_list):
-    print(news_list[:10])
-
 
 ''' Image '''
 def download_img(news):
@@ -267,8 +264,11 @@ def save_response(r):
     session['history'] = history[-50:]
     return r
 
-''' main '''
-if __name__ == "__main__":
+
+''' Before run '''
+if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    print("INIT")
+    
     # set cnt data
     ALL_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}})))
     NEWS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "news"}, {"category": "middleeast"}, {"category": "northamerica"}]})))
@@ -295,5 +295,8 @@ if __name__ == "__main__":
     # get today's news
     news_list = cursor_to_list(collection.find({"date": TODAY}))
     news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
-    
+
+
+''' main '''
+if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True) # 실행시 포트 수정
