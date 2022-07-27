@@ -265,10 +265,8 @@ def save_response(r):
     return r
 
 
-''' Before run '''
-if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    print("INIT")
-    
+''' main '''
+if __name__ == "__main__":
     # set cnt data
     ALL_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}})))
     NEWS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "news"}, {"category": "middleeast"}, {"category": "northamerica"}]})))
@@ -295,8 +293,5 @@ if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     # get today's news
     news_list = cursor_to_list(collection.find({"date": TODAY}))
     news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
-
-
-''' main '''
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True) # 실행시 포트 수정
+    
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False) # 실행시 포트 수정
