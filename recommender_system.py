@@ -116,14 +116,13 @@ def change_impr(model, data_path, file_name):
     model.test_iterator.imprs[0] = impr
     model.test_iterator.labels[0] = label
 
-'''
-아래는 사용 예시
-data_path = './recommenders/MIND_dataset'
-model, news_vecs = init_model(data_path, impr_file='2019-11-11.tsv')
-get_recommendation(model, news_vecs, data_path)
-change_impr(model, data_path, file_name='2019-11-12.tsv')
-get_recommendation(model, news_vecs, data_path)
-add_to_user_history('N25434', model.test_iterator)
-add_to_user_history('N97703', model.test_iterator)
-get_recommendation(model, news_vecs, data_path)
-'''
+
+# data_path = './recommenders/MIND_dataset'
+# model, news_vecs = init_model(data_path, impr_file='2019-11-11.tsv')
+# get_recommendation(model, news_vecs, data_path)
+# change_impr(model, data_path, file_name='2019-11-12.tsv')
+# get_recommendation(model, news_vecs, data_path)
+# add_to_user_history('N25434', model.test_iterator)
+# add_to_user_history('N97703', model.test_iterator)
+# get_recommendation(model, news_vecs, data_path)
+

@@ -3,27 +3,23 @@ from pymongo import MongoClient
 from google_images_download import google_images_download
 from dateutil.parser import parse
 import recommender_system as rs
-# from celery import Celery
-# from tasks import get_today_news_list
+import tensorflow.compat.v1 as tf
+from tensorflow.python.keras import backend as K
 import math
 import os
 import datetime
 
-
 ''' Initial Setting '''
 app = Flask(__name__)
 app.secret_key = 'secretkey' # 세션을 위해 필요한 값
-# app.config.update(
-#     CELERY_BROKER_URL='redis://localhost:6379',
-#     CELERY_RESULT_BACKEND='redis://localhost:6379'
-# ) # 비동기 처리를 위해 redis 서버와 celery task에 필요한 설정
 
 myclient = MongoClient("mongodb://localhost:27017/") # 실행시 포트 수정
 db = myclient["news_recsys"]
 collection = db["news"]
 
-# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-# celery.conf.update(app.config)
+tf.disable_v2_behavior()
+model = None
+news_vecs = None
 
 
 ''' Data '''
@@ -130,13 +126,6 @@ def get_img_paths(news_list):
     return img_paths
 
 
-# ''' Async '''
-# @celery.task
-# def tasks(today):
-#     time.sleep(5)
-#     return collection.find({"date": today})
-
-
 ''' Routing '''
 @app.route("/")
 def news_home():
@@ -219,15 +208,8 @@ def page_not_found(e):
 def test_method():
     if request.method == "GET": return jsonify(news_list)
     elif request.method == "POST": return "POST로 전달"
-    
-# @app.route("/test/async")
-# def test_async():
-#     task = tasks.delay(TODAY)
-#     return jsonify({'id': task.id})
-#     # print(tmp_today_news_list)
-#     # return jsonify(tmp_today_news_list)
 
-# 동작 안함 ㅋㅋ;;
+# 동작 안함
 # @app.route("/session/clear", methods=["POST"])
 # def session_clear():
 #     if request.method == "POST":
@@ -238,7 +220,7 @@ def test_method():
 
 @app.after_request
 def save_response(r):
-    global model
+    global model, news_vecs, data_path, graph, session1
     if request.method == 'POST':
         return r
 
@@ -258,8 +240,11 @@ def save_response(r):
             news_id = request.view_args.get('news_id')
             if news_id not in history:
                 history.append(news_id)
-                rs.add_to_user_history('N25434', model.test_iterator)
-                print(history)
+                K.set_session(session1)
+                with graph.as_default():
+                	rs.add_to_user_history(news_id, model.test_iterator)
+                	result = rs.get_recommendation(model, news_vecs, data_path)
+                print(result) # 추천 리스트
 
     session['history'] = history[-50:]
     return r
@@ -287,8 +272,12 @@ if __name__ == "__main__":
     print("WEATHER_CNT", WEATHER_CNT)
     print("AUTOS_CNT", AUTOS_CNT)
     
-    data_path = './recommenders/MIND_dataset'
-    # model, news_vecs = rs.init_model(data_path, impr_file='2019-11-11.tsv')
+    graph = tf.Graph()
+    with graph.as_default():
+        session1 = tf.Session(graph=graph)
+        with session1.as_default():
+            data_path = './recommenders/MIND_dataset'
+            model, news_vecs = rs.init_model(data_path, impr_file=TODAY + '.tsv')
     
     # get today's news
     news_list = cursor_to_list(collection.find({"date": TODAY}))
