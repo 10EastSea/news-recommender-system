@@ -24,6 +24,7 @@ news_vecs = None
 
 ''' Data '''
 TODAY = "2019-11-11"
+HISTORY_THRESHOLD = 5
 
 ALL_CNT = 101527
 NEWS_CNT = 30478 + 2 + 1
@@ -163,7 +164,18 @@ def news_detail(news_id):
     img_path = get_img_path(news)
     
     # recommended news setting
-    rec_news_list = news_list[:10] # !!해당 뉴스 기반 추천 적용
+    history = session.get('history', [])
+    session_rec_news_list = session.get('session_rec_news_list', [])
+    print("[news_detail] history:", history)
+    print("[news_detail] rec_news_list", session_rec_news_list)
+    
+    if len(history) < HISTORY_THRESHOLD: rec_news_list = news_list[:10] # threshold 이하: 조회수 기반 추천
+    elif len(session_rec_news_list) == 0: rec_news_list = news_list[:10] # threshold 이상 but 추천 리스트 없음: 조회수 기반 추천
+    else: # threshold 이상: 추천 알고리즘에 의한 추천
+        tmp_rec_news_list = []
+        for session_rec_news in session_rec_news_list:
+            tmp_rec_news_list.append(news_data_formating(collection.find_one({"id": session_rec_news})))
+        rec_news_list = tmp_rec_news_list[:10]
     
     return render_template("detail.html", news=news, img_path=img_path, rec_news_list=rec_news_list)
 
@@ -228,6 +240,7 @@ def save_response(r):
         return r
     
     history = session.get('history', [])
+    session_rec_news_list = session.get('session_rec_news_list', [])
     
     if history:
         # 새로 고침 시
@@ -244,7 +257,9 @@ def save_response(r):
                 with graph.as_default():
                 	rs.add_to_user_history(news_id, model.test_iterator)
                 	result = rs.get_recommendation(model, news_vecs, data_path)
-                print(result) # 추천 리스트
+                
+                # print(result)
+                session['session_rec_news_list'] = result # 추천 리스트
 
     session['history'] = history[-50:]
     return r
