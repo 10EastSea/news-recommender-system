@@ -5,8 +5,9 @@ from dateutil.parser import parse
 import recommender_system as rs
 import tensorflow.compat.v1 as tf
 from tensorflow.python.keras import backend as K
-import math
 import os
+import gc
+import math
 import datetime
 
 ''' Initial Setting '''
@@ -54,6 +55,8 @@ def cursor_to_list(mongodb_results):
         
         news = news_data_formating(news)
         results.append(news)
+    del mongodb_results
+    gc.collect()
     return results
 
 def news_data_formating(news):
@@ -150,7 +153,7 @@ def news_home():
     rec_news_list = news_list[:10] # !!impression 추천 적용
     img_paths = get_img_paths(rec_news_list)
     
-    return render_template("index.html", rec_news_list=rec_news_list, img_paths=img_paths, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
+    return render_template("index.html", today=TODAY, rec_news_list=rec_news_list, img_paths=img_paths, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
 
 @app.route("/detail/<news_id>")
 def news_detail(news_id):
@@ -177,7 +180,7 @@ def news_detail(news_id):
             tmp_rec_news_list.append(news_data_formating(collection.find_one({"id": session_rec_news})))
         rec_news_list = tmp_rec_news_list[:10]
     
-    return render_template("detail.html", news=news, img_path=img_path, rec_news_list=rec_news_list)
+    return render_template("detail.html", today=TODAY, news=news, img_path=img_path, rec_news_list=rec_news_list)
 
 @app.route("/category/<category>")
 def news_category(category):
@@ -210,16 +213,52 @@ def news_category(category):
     rec_news_list = tmp_category_list[:10] # !!카테고리 별 추천 적용
     img_paths = get_img_paths(rec_news_list)
     
-    return render_template("category.html", category=category, rec_news_list=rec_news_list, img_paths=img_paths, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
+    return render_template("category.html", today=TODAY, category=category, rec_news_list=rec_news_list, img_paths=img_paths, all_news_list=all_news_list, page=page, limit=limit, last_page_num=last_page_num, block_start=block_start, block_end=block_end)
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html"), 404
+    return render_template("404.html", today=TODAY), 404
 
 @app.route("/test/method", methods=["GET", "POST"])
 def test_method():
     if request.method == "GET": return jsonify(news_list)
     elif request.method == "POST": return "POST로 전달"
+    
+@app.route("/date", methods=["POST"])
+def date_setting():
+    global TODAY
+    global news_list
+    
+    TODAY = request.form['date']
+    print("[date_setting] TODAY", TODAY)
+    
+    ALL_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}})
+    NEWS_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "news"}, {"category": "middleeast"}, {"category": "northamerica"}]})
+    SPORTS_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "sports"}]})
+    LIFE_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "lifestyle"}, {"category": "foodanddrink"}, {"category": "health"}, {"category": "kids"}]})
+    FINANCE_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "finance"}]})
+    TRAVEL_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "travel"}]})
+    ENTERTAINMENT_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "entertainment"}, {"category": "video"}, {"category": "tv"}, {"category": "music"}, {"category": "movies"}, {"category": "games"}]})
+    WEATHER_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "weather"}]})
+    AUTOS_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "autos"}]})
+    print("ALL_CNT", ALL_CNT)
+    print("NEWS_CNT", NEWS_CNT)
+    print("SPORTS_CNT", SPORTS_CNT)
+    print("LIFE_CNT", LIFE_CNT)
+    print("FINANCE_CNT", FINANCE_CNT)
+    print("TRAVEL_CNT", TRAVEL_CNT)
+    print("ENTERTAINMENT_CNT", ENTERTAINMENT_CNT)
+    print("WEATHER_CNT", WEATHER_CNT)
+    print("AUTOS_CNT", AUTOS_CNT)
+    
+    del news_list
+    gc.collect()
+    
+    # get today's news
+    news_list = cursor_to_list(collection.find({"date": TODAY}))
+    news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
+    return TODAY
+    
 
 # 동작 안함
 # @app.route("/session/clear", methods=["POST"])
@@ -261,22 +300,22 @@ def save_response(r):
                 # print(result)
                 session['session_rec_news_list'] = result # 추천 리스트
 
-    session['history'] = history[-50:]
+    session['history'] = history[-5:] # 50에서 5로 줄임
     return r
 
 
 ''' main '''
 if __name__ == "__main__":
     # set cnt data
-    ALL_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}})))
-    NEWS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "news"}, {"category": "middleeast"}, {"category": "northamerica"}]})))
-    SPORTS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "sports"}]})))
-    LIFE_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "lifestyle"}, {"category": "foodanddrink"}, {"category": "health"}, {"category": "kids"}]})))
-    FINANCE_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "finance"}]})))
-    TRAVEL_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "travel"}]})))
-    ENTERTAINMENT_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "entertainment"}, {"category": "video"}, {"category": "tv"}, {"category": "music"}, {"category": "movies"}, {"category": "games"}]})))
-    WEATHER_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "weather"}]})))
-    AUTOS_CNT = len(cursor_to_list(collection.find({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "autos"}]})))
+    ALL_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}})
+    NEWS_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "news"}, {"category": "middleeast"}, {"category": "northamerica"}]})
+    SPORTS_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "sports"}]})
+    LIFE_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "lifestyle"}, {"category": "foodanddrink"}, {"category": "health"}, {"category": "kids"}]})
+    FINANCE_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "finance"}]})
+    TRAVEL_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "travel"}]})
+    ENTERTAINMENT_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "entertainment"}, {"category": "video"}, {"category": "tv"}, {"category": "music"}, {"category": "movies"}, {"category": "games"}]})
+    WEATHER_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "weather"}]})
+    AUTOS_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "autos"}]})
     print("\nALL_CNT", ALL_CNT)
     print("NEWS_CNT", NEWS_CNT)
     print("SPORTS_CNT", SPORTS_CNT)
@@ -286,6 +325,7 @@ if __name__ == "__main__":
     print("ENTERTAINMENT_CNT", ENTERTAINMENT_CNT)
     print("WEATHER_CNT", WEATHER_CNT)
     print("AUTOS_CNT", AUTOS_CNT)
+    gc.collect()
     
     graph = tf.Graph()
     with graph.as_default():

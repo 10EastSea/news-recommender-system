@@ -80,6 +80,36 @@
                     <a class="nav-link" href="/category/autos">Autos</a>
                     {% endif %}
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Date</a>
+                    <ul class="dropdown-menu">
+                        {% if today == "2019-11-11" %}
+                        <li><button id="day_11" class="dropdown-item active">2019-11-11</button></li>
+                        {% else %}
+                        <li><button id="day_11" class="dropdown-item">2019-11-11</button></li>
+                        {% endif %}
+                        {% if today == "2019-11-12" %}
+                        <li><button id="day_12" class="dropdown-item active">2019-11-12</button></li>
+                        {% else %}
+                        <li><button id="day_12" class="dropdown-item">2019-11-12</button></li>
+                        {% endif %}
+                        {% if today == "2019-11-13" %}
+                        <li><button id="day_13" class="dropdown-item active">2019-11-13</button></li>
+                        {% else %}
+                        <li><button id="day_13" class="dropdown-item">2019-11-13</button></li>
+                        {% endif %}
+                        {% if today == "2019-11-14" %}
+                        <li><button id="day_14" class="dropdown-item active">2019-11-14</button></li>
+                        {% else %}
+                        <li><button id="day_14" class="dropdown-item">2019-11-14</button></li>
+                        {% endif %}
+                        {% if today == "2019-11-15" %}
+                        <li><button id="day_15" class="dropdown-item active">2019-11-15</button></li>
+                        {% else %}
+                        <li><button id="day_15" class="dropdown-item">2019-11-15</button></li>
+                        {% endif %}
+                	</ul>
+                </li>
             </ul>
         </div>
     </div>

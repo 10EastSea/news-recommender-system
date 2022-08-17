@@ -62,4 +62,35 @@ $(document).ready(function () {
         var url = "/detail/" + $("#main_impression_id").text();
         $(location).attr("href", url);
     });
+    
+    $("#day_11").click(function() {
+        $.post("/date", {date: "2019-11-11"}, function(data, status) {
+            alert("success");
+            window.location.reload();
+        });
+    });
+    $("#day_12").click(function() {
+        $.post("/date", {date: "2019-11-12"}, function(data, status) {
+            alert("success");
+            window.location.reload();
+        });
+    });
+    $("#day_13").click(function() {
+        $.post("/date", {date: "2019-11-13"}, function(data, status) {
+            alert("success");
+            window.location.reload();
+        });
+    });
+    $("#day_14").click(function() {
+        $.post("/date", {date: "2019-11-14"}, function(data, status) {
+            alert("success");
+            window.location.reload();
+        });
+    });
+    $("#day_15").click(function() {
+        $.post("/date", {date: "2019-11-15"}, function(data, status) {
+            alert("success");
+            window.location.reload();
+        });
+    });
 });
