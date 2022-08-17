@@ -226,7 +226,7 @@ def test_method():
     
 @app.route("/date", methods=["POST"])
 def date_setting():
-    global TODAY
+    global TODAY, model, data_path
     global news_list
     
     TODAY = request.form['date']
@@ -257,6 +257,10 @@ def date_setting():
     # get today's news
     news_list = cursor_to_list(collection.find({"date": TODAY}))
     news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
+    
+    session.clear(); history = session.get('history', []); print("session:", history)
+    rs.change_impr(model, data_path, TODAY + '.tsv')
+    
     return TODAY
     
 
@@ -316,7 +320,7 @@ if __name__ == "__main__":
     ENTERTAINMENT_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "entertainment"}, {"category": "video"}, {"category": "tv"}, {"category": "music"}, {"category": "movies"}, {"category": "games"}]})
     WEATHER_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "weather"}]})
     AUTOS_CNT = collection.count_documents({"isodate": {"$lte": parse(TODAY)}, "$or": [{"category": "autos"}]})
-    print("\nALL_CNT", ALL_CNT)
+    print("ALL_CNT", ALL_CNT)
     print("NEWS_CNT", NEWS_CNT)
     print("SPORTS_CNT", SPORTS_CNT)
     print("LIFE_CNT", LIFE_CNT)
