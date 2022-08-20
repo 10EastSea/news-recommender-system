@@ -157,8 +157,8 @@ def news_home():
 
 @app.route("/detail/<news_id>")
 def news_detail(news_id):
-    global news_list
-    
+    global news_list, model, news_vecs, data_path
+
     # detail new setting
     news = collection.find_one({"id": news_id})
     news = news_data_formating(news)
@@ -168,7 +168,21 @@ def news_detail(news_id):
     
     # recommended news setting
     history = session.get('history', [])
+    
+    if request.view_args is not None:
+        if request.view_args.get('news_id') is not None:
+            news_id = request.view_args.get('news_id')
+            if news_id not in history:
+                history.append(news_id)
+                K.set_session(session1)
+                with graph.as_default():
+                	rs.add_to_user_history(news_id, model.test_iterator)
+                	result = rs.get_recommendation(model, news_vecs, data_path, history)
+                session['session_rec_news_list'] = result # 추천 리스트
+
     session_rec_news_list = session.get('session_rec_news_list', [])
+    session['history'] = history[-10:] # 50에서 10로 줄임
+    
     print("[news_detail] history:", history)
     print("[news_detail] rec_news_list", session_rec_news_list)
     
@@ -258,7 +272,8 @@ def date_setting():
     news_list = cursor_to_list(collection.find({"date": TODAY}))
     news_list = sorted(news_list, key=lambda x: x['hits'], reverse=True)
     
-    session.clear(); history = session.get('history', []); print("session:", history)
+    # session.clear(); history = session.get('history', []); print("session:", history)
+    history = session.get('history', []); print("session:", history)
     rs.change_impr(model, data_path, TODAY + '.tsv')
     
     return TODAY
@@ -282,29 +297,29 @@ def save_response(r):
     if request.endpoint == 'static':
         return r
     
-    history = session.get('history', [])
-    session_rec_news_list = session.get('session_rec_news_list', [])
+    # history = session.get('history', [])
+    # session_rec_news_list = session.get('session_rec_news_list', [])
     
-    if history:
-        # 새로 고침 시
-        if (history[-1][0] == request.endpoint and
-                history[-1][1] == request.view_args):
-            return r
+    # if history:
+    #     # 새로 고침 시
+    #     if (history[-1][0] == request.endpoint and
+    #             history[-1][1] == request.view_args):
+    #         return r
 
-    if request.view_args is not None:
-        if request.view_args.get('news_id') is not None:
-            news_id = request.view_args.get('news_id')
-            if news_id not in history:
-                history.append(news_id)
-                K.set_session(session1)
-                with graph.as_default():
-                	rs.add_to_user_history(news_id, model.test_iterator)
-                	result = rs.get_recommendation(model, news_vecs, data_path)
+    # if request.view_args is not None:
+    #     if request.view_args.get('news_id') is not None:
+    #         news_id = request.view_args.get('news_id')
+    #         if news_id not in history:
+    #             history.append(news_id)
+    #             K.set_session(session1)
+    #             with graph.as_default():
+    #             	rs.add_to_user_history(news_id, model.test_iterator)
+    #             	result = rs.get_recommendation(model, news_vecs, data_path, history)
                 
-                # print(result)
-                session['session_rec_news_list'] = result # 추천 리스트
+    #             # print(result)
+    #             session['session_rec_news_list'] = result # 추천 리스트
 
-    session['history'] = history[-5:] # 50에서 5로 줄임
+    # session['history'] = history[-50:] # 50에서 5로 줄임
     return r
 
 

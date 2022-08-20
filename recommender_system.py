@@ -19,11 +19,16 @@ def add_to_user_history(nid, mind_iterator):
     history = mind_iterator.histories[0]
     history = list(filter(lambda x: x != 0, history))
     history.append(mind_iterator.nid2index[nid])
+    history = history[-8:]
+    print(f"user_history: {history}")
 
-    history = [0] * (mind_iterator.his_size - len(history)) + history[
-                                                              -mind_iterator.his_size :
-                                                              ]
+    # history = [0] * (mind_iterator.his_size - len(history)) + history[
+    #                                                           -mind_iterator.his_size :
+    #                                                           ]
+    
+    history = [0] * (mind_iterator.his_size - len(history)) + history
     mind_iterator.histories[0] = history
+    
 
 
 def init_model(data_path, impr_file) -> NRMSModel:
@@ -79,28 +84,33 @@ def init_model(data_path, impr_file) -> NRMSModel:
     return model, news_vecs
 
 
-# it returns top 10 news from news candidates pool.
-def get_recommendation(model: NRMSModel, news_vecs, data_path):
+def get_recommendation(model: NRMSModel, news_vecs, data_path, history):
     train_news_file = os.path.join(data_path, 'train', r'news.tsv')
     user_behaviors_file = os.path.join(data_path, r'user_behaviors.csv')
 
     group_impr_indexes, group_labels, group_preds = model.run_fast_eval(train_news_file, user_behaviors_file, news_vecs)
-
+	
     import time
     start = time.time()
+    
     for impr_index, preds in tqdm(zip(group_impr_indexes, group_preds)):
         pred_rank = (np.argsort(np.argsort(preds)[::-1]) + 1).tolist()
-        recommendation = [None] * 10
+        recommendation = [None] * len(pred_rank)
 
         for i, rank in enumerate(pred_rank):
-            if rank < 11:
-                news_idx = model.test_iterator.imprs[0][i]
-                recommendation[rank - 1] = model.test_iterator.index2nid[news_idx]
+            news_idx = model.test_iterator.imprs[0][i]
+            recommendation[rank - 1] = model.test_iterator.index2nid[news_idx]
 
+    recommendation = recommendation[:60]
+
+    for browsed_news in history:
+        if browsed_news in recommendation:
+        	recommendation.remove(browsed_news)
+        	print(f"browsed_news deleted!:{browsed_news}")
+            
     
     print(time.time() - start)
-    print(recommendation)
-    return recommendation
+    return recommendation[:10]
 
 def change_impr(model, data_path, file_name):
     impr_file = os.path.join(data_path, 'result_11to15', file_name)
@@ -119,7 +129,7 @@ def change_impr(model, data_path, file_name):
 
 # data_path = './recommenders/MIND_dataset'
 # model, news_vecs = init_model(data_path, impr_file='2019-11-11.tsv')
-# get_recommendation(model, news_vecs, data_path)
+# get_recommendation(model, news_vecs, data_path, ['N85622'])
 # change_impr(model, data_path, file_name='2019-11-12.tsv')
 # get_recommendation(model, news_vecs, data_path)
 # add_to_user_history('N25434', model.test_iterator)
